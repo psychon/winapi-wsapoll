@@ -11,7 +11,7 @@ mod socket {
     use std::io;
 
     use winapi::shared::minwindef::INT;
-    use winapi::um::winsock2::{WSAPoll, WSAPOLLFD};
+    use winapi::um::winsock2::{WSAGetLastError, WSAPoll, SOCKET_ERROR, WSAPOLLFD};
 
     /// `wsa_poll` waits for one of a set of file descriptors to become ready to
     /// perform I/O.
@@ -23,8 +23,8 @@ mod socket {
         unsafe {
             let length = fd_array.len().try_into().unwrap();
             let rc = WSAPoll(fd_array.as_mut_ptr(), length, timeout);
-            if rc < 0 {
-                return Err(io::Error::last_os_error());
+            if rc == SOCKET_ERROR {
+                return Err(io::Error::from_raw_os_error(WSAGetLastError()));
             };
             Ok(rc.try_into().unwrap())
         }
