@@ -19,10 +19,7 @@ mod socket {
     /// This corresponds to calling [`WSAPoll`].
     ///
     /// [`WSAPoll`]: https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsapoll
-    pub fn wsa_poll(
-        fd_array: &mut [WSAPOLLFD],
-        timeout: INT,
-    ) -> io::Result<usize> {
+    pub fn wsa_poll(fd_array: &mut [WSAPOLLFD], timeout: INT) -> io::Result<usize> {
         unsafe {
             let length = fd_array.len().try_into().unwrap();
             let rc = WSAPoll(fd_array.as_mut_ptr(), length, timeout);
@@ -54,7 +51,11 @@ mod socket {
         }
 
         fn poll(socket: RawSocket, events: SHORT, revents: SHORT) -> Result<()> {
-            let mut sockets = [WSAPOLLFD { fd: socket as _, events, revents: 0 }];
+            let mut sockets = [WSAPOLLFD {
+                fd: socket as _,
+                events,
+                revents: 0,
+            }];
             let count = wsa_poll(&mut sockets, -1)?;
             assert_eq!(count, 1);
             assert_eq!(sockets[0].revents, revents);
@@ -73,7 +74,11 @@ mod socket {
             stream1.write_all(b"1")?;
 
             // stream2 should now be readable and writable
-            poll(stream2.as_raw_socket(), POLLIN | POLLOUT, POLLOUT | POLLRDNORM)?;
+            poll(
+                stream2.as_raw_socket(),
+                POLLIN | POLLOUT,
+                POLLOUT | POLLRDNORM,
+            )?;
 
             Ok(())
         }
