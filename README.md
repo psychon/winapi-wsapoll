@@ -3,7 +3,7 @@
 [![Workflow Status](https://github.com/psychon/winapi-wsapoll/workflows/ci/badge.svg)](https://github.com/psychon/winapi-wsapoll/actions)
 [![Crate](https://img.shields.io/crates/v/winapi-wsapoll.svg)](https://crates.io/crates/winapi-wsapoll)
 [![API](https://docs.rs/winapi-wsapoll/badge.svg)](https://docs.rs/winapi-wsapoll)
-![Minimum rustc version](https://img.shields.io/badge/rustc-1.37+-lightgray.svg)
+![Minimum rustc version](https://img.shields.io/badge/rustc-1.34+-lightgray.svg)
 [![License](https://img.shields.io/crates/l/winapi-wsapoll.svg)](https://github.com/psychon/winapi-wsapoll#license)
 
 You want to `#![forbid(unsafe_code)]` in your crate? But you also need access to
