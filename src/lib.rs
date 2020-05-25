@@ -1,6 +1,10 @@
 //! This crate provides a safe binding to `WSAPoll`.
 //!
 //! On non-windows, this crate is empty.
+//!
+//! # Minimum Rust version
+//!
+//! The minimum Rust version required by this crate is 1.34.
 
 #![deny(
     rust_2018_idioms,
