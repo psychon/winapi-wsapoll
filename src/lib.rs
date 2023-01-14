@@ -23,8 +23,9 @@ mod socket {
     use std::convert::TryInto;
     use std::io;
 
-    use winapi::shared::minwindef::INT;
-    use winapi::um::winsock2::{WSAGetLastError, WSAPoll, SOCKET_ERROR, WSAPOLLFD};
+    use windows_sys::Win32::Networking::WinSock::{
+        WSAGetLastError, WSAPoll, SOCKET_ERROR, WSAPOLLFD,
+    };
 
     /// `wsa_poll` waits for one of a set of file descriptors to become ready to
     /// perform I/O.
@@ -32,7 +33,7 @@ mod socket {
     /// This corresponds to calling [`WSAPoll`].
     ///
     /// [`WSAPoll`]: https://docs.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsapoll
-    pub fn wsa_poll(fd_array: &mut [WSAPOLLFD], timeout: INT) -> io::Result<usize> {
+    pub fn wsa_poll(fd_array: &mut [WSAPOLLFD], timeout: i32) -> io::Result<usize> {
         unsafe {
             let length = fd_array.len().try_into().unwrap();
             let rc = WSAPoll(fd_array.as_mut_ptr(), length, timeout);
@@ -49,8 +50,7 @@ mod socket {
         use std::net::{TcpListener, TcpStream};
         use std::os::windows::io::{AsRawSocket, RawSocket};
 
-        use winapi::um::winnt::SHORT;
-        use winapi::um::winsock2::{POLLIN, POLLOUT, POLLRDNORM, WSAPOLLFD};
+        use windows_sys::Win32::Networking::WinSock::{POLLIN, POLLOUT, POLLRDNORM, WSAPOLLFD};
 
         use super::wsa_poll;
 
@@ -63,15 +63,15 @@ mod socket {
             Ok((stream1, stream2))
         }
 
-        fn poll(socket: RawSocket, events: SHORT, revents: SHORT) -> Result<()> {
+        fn poll(socket: RawSocket, events: u16, revents: u16) -> Result<()> {
             let mut sockets = [WSAPOLLFD {
                 fd: socket as _,
-                events,
+                events: events as _,
                 revents: 0,
             }];
             let count = wsa_poll(&mut sockets, -1)?;
             assert_eq!(count, 1);
-            assert_eq!(sockets[0].revents, revents);
+            assert_eq!(sockets[0].revents, revents as _);
 
             Ok(())
         }
