@@ -14,3 +14,6 @@ license = "MIT OR Apache-2.0"
 [target.'cfg(windows)'.dependencies.winapi]
 version = "0.3"
 features = ["winsock2"]
+
+[badges.maintenance]
+status = "as-is"
